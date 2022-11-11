@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form frmMain 
-   Caption         =   "TestClient"
+   Caption         =   "ThreadingClient"
    ClientHeight    =   9405
    ClientLeft      =   60
    ClientTop       =   345
@@ -36,7 +36,7 @@ Begin VB.Form frmMain
    End
    Begin VB.TextBox Text1 
       Alignment       =   1  'Rechts
-      Height          =   405
+      Height          =   375
       Left            =   120
       TabIndex        =   1
       Text            =   "100"
@@ -64,6 +64,7 @@ Private m_Threads As Collection
 
 Private Sub Form_Load()
     
+    Me.Caption = Me.Caption & " v" & App.Major & "." & App.Minor & "." & App.Revision
     Set m_Threads = New Collection
     
 End Sub
@@ -90,13 +91,16 @@ End Sub
 
 Private Sub BtnCreateThreads_Click()
     
+    If Not CheckAndRegister("PThreadServer", "MyThread") Then Exit Sub
+    Dim mp As MousePointerConstants: mp = Me.MousePointer
+    Me.MousePointer = MousePointerConstants.vbArrowHourglass
     Dim i As Long, c As Long, n As Long: n = Num_Parse(Text1.Text)
     If n <= 0 Then Exit Sub
     For i = 0 To n - 1
         c = m_Threads.Count
         m_Threads.Add MNew.MyThread(Me, c, "192.168.178." & c)
     Next
-
+    Me.MousePointer = mp
 End Sub
 
 Private Function Num_Parse(s As String) As Long
@@ -119,6 +123,39 @@ Private Sub BtnClearList_Click()
     List1.Clear
 End Sub
 
+Private Function CheckAndRegister(ByVal libID As String, clsID As String)
+    CheckAndRegister = IsAcXRegistered(libID & "." & clsID)
+    If CheckAndRegister Then Exit Function
+    Dim mess As String: mess = "Could not create instance of class: " & clsID & "." & vbCrLf & "Maybe class not registered from library: " & libID
+    Dim mbr As VbMsgBoxResult, btn As VbMsgBoxStyle: btn = vbOKOnly
+    'CheckAndRegister = IsAdmin
+    If IsAdmin Then
+        mess = mess & vbCrLf & "Register now?"
+        btn = vbYesNo
+    End If
+    mbr = MsgBox(mess, btn)
+    If mbr = vbYes Then
+        Dim pfn As String: pfn = App.Path & "\" & Mid(libID, 2) & ".exe"
+        If Not FileExists(pfn) Then
+            MsgBox "File not found: " & vbCrLf & pfn
+            Exit Function
+        End If
+        'OK now we try to register it
+        Shell pfn & " /register", vbNormalFocus
+        CheckAndRegister = IsAcXRegistered(libID & "." & clsID)
+    End If
+End Function
+
+Private Function FileExists(ByVal pfn As String) As Boolean
+    FileExists = Not CBool(GetAttr(pfn) And (vbDirectory Or vbVolume))
+End Function
+
+Private Function IsAcXRegistered(ByVal ClassID As String) As Boolean
+Try: On Error GoTo Catch
+    Dim obj As Object: Set obj = CreateObject(ClassID)
+    IsAcXRegistered = Not (obj Is Nothing)
+Catch:
+End Function
 ' v ############################## v '    Implements IThreading    ' v ############################## v '
 
 Private Sub IThreading_ActionStarted(ByVal Index As Long)
