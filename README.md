@@ -3,7 +3,7 @@
 
 [![GitHub](https://img.shields.io/github/license/OlimilO1402/AcX_Threading?style=plastic)](https://github.com/OlimilO1402/AcX_Threading/blob/master/LICENSE) 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/OlimilO1402/AcX_Threading?style=plastic)](https://github.com/OlimilO1402/AcX_Threading/releases/latest)
-[![Github All Releases](https://img.shields.io/github/downloads/OlimilO1402/AcX_Threading/total.svg)](https://github.com/OlimilO1402/AcX_Threading/releases/download/v1.0.5/AcXThreading_v1.0.5.zip)
+[![Github All Releases](https://img.shields.io/github/downloads/OlimilO1402/AcX_Threading/total.svg)](https://github.com/OlimilO1402/AcX_Threading/releases/download/v1.2.14/AcXThreading_v1.2.14.zip)
 [![Follow](https://img.shields.io/github/followers/OlimilO1402.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/OlimilO1402/AcX_Threading/watchers)
 
 Project started in nov 2022.  

@@ -1,6 +1,6 @@
 Type=Exe
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\WINDOWS\SysWow64\stdole2.tlb#OLE Automation
-Reference=*\G{6A2826E6-A547-40BC-966D-AA420B9E3852}#1.0#0#ThreadServer.exe#PThreadServer
+Reference=*\G{DC193BB7-635A-493D-A7D9-80416274FB20}#1.0#0#ThreadServer.exe#PThreadServer
 Form=Forms\frmMain.frm
 Module=MNew; Modules\MNew.bas
 Module=MHapCod; ..\Syst_IsAdmin\Modules\MHapCod.bas
@@ -17,7 +17,7 @@ HelpContextID="0"
 CompatibleMode="0"
 MajorVer=1
 MinorVer=2
-RevisionVer=15
+RevisionVer=16
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionCompanyName="MBO-Ing.com"

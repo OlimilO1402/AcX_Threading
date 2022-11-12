@@ -84,6 +84,9 @@ End Property
 Public Property Get IP() As String
     IP = mIP
 End Property
+Public Property Let IP(Value As String)
+    mIP = Value
+End Property
 
 Public Property Get Name() As String
     Name = mName

@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin VB.Form frmMain 
    Caption         =   "ThreadingClient"
-   ClientHeight    =   8805
+   ClientHeight    =   7935
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   8175
+   ClientWidth     =   9735
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9
@@ -16,13 +16,13 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
-   ScaleHeight     =   8805
-   ScaleWidth      =   8175
+   ScaleHeight     =   7935
+   ScaleWidth      =   9735
    StartUpPosition =   3  'Windows-Standard
    Begin VB.CommandButton BtnUnregister 
       Caption         =   "UnregServer"
       Height          =   375
-      Left            =   6480
+      Left            =   8040
       TabIndex        =   5
       Top             =   120
       Width           =   1575
@@ -30,8 +30,16 @@ Begin VB.Form frmMain
    Begin VB.CommandButton BtnClearList 
       Caption         =   "Clear List"
       Height          =   375
-      Left            =   4920
+      Left            =   6480
       TabIndex        =   4
+      Top             =   120
+      Width           =   1575
+   End
+   Begin VB.CommandButton BtnSetNewIPAddresses 
+      Caption         =   "New IP-address"
+      Height          =   375
+      Left            =   4920
+      TabIndex        =   6
       Top             =   120
       Width           =   1575
    End
@@ -61,11 +69,11 @@ Begin VB.Form frmMain
       Width           =   1545
    End
    Begin VB.ListBox List1 
-      Height          =   4470
+      Height          =   6780
       Left            =   0
       TabIndex        =   0
       Top             =   600
-      Width           =   8175
+      Width           =   9615
    End
 End
 Attribute VB_Name = "frmMain"
@@ -145,6 +153,17 @@ Private Sub BtnStartThreads_Click()
     For Each v In m_Threads
         Set mt = v
         mt.Action
+    Next
+    
+End Sub
+
+Private Sub BtnSetNewIPAddresses_Click()
+    
+    Dim mt As MyThread, c As Long, v
+    For Each v In m_Threads
+        Set mt = v
+        mt.IP = "192.168.2." & c
+        c = c + 1
     Next
     
 End Sub
