@@ -1,13 +1,22 @@
 VERSION 5.00
 Begin VB.Form frmMain 
    Caption         =   "ThreadingClient"
-   ClientHeight    =   9405
+   ClientHeight    =   8805
    ClientLeft      =   60
    ClientTop       =   345
    ClientWidth     =   8175
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   9
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
-   ScaleHeight     =   9405
+   ScaleHeight     =   8805
    ScaleWidth      =   8175
    StartUpPosition =   3  'Windows-Standard
    Begin VB.CommandButton BtnUnregister 
@@ -44,15 +53,15 @@ Begin VB.Form frmMain
    End
    Begin VB.TextBox Text1 
       Alignment       =   1  'Rechts
-      Height          =   375
-      Left            =   120
+      Height          =   345
+      Left            =   135
       TabIndex        =   1
       Text            =   "100"
-      Top             =   120
-      Width           =   1575
+      Top             =   135
+      Width           =   1545
    End
    Begin VB.ListBox List1 
-      Height          =   4740
+      Height          =   4470
       Left            =   0
       TabIndex        =   0
       Top             =   600
@@ -68,7 +77,7 @@ Option Explicit
 
 Implements IThreading
 
-Private m_Threads As Collection
+Private m_Threads       As Collection
 Private m_ThrdSrv_pfn   As String
 Private m_ThrdSrv_libID As String
 Private m_ThrdSrv_clsID As String
