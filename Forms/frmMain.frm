@@ -104,7 +104,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub BtnCreateThreads_Click()
-    
+Try: On Error GoTo Catch
     If Not CheckAndRegister(m_ThrdSrv_libID, m_ThrdSrv_clsID, m_ThrdSrv_pfn) Then Exit Sub
     
     Dim mp As MousePointerConstants: mp = Me.MousePointer
@@ -119,7 +119,9 @@ Private Sub BtnCreateThreads_Click()
     Next
     
     Me.MousePointer = mp
-    
+    Exit Sub
+Catch:
+    MsgBox "Error : " & Err.Number & " in " & TypeName(Me) & "::" & "BtnCreateThreads_Click" & vbCrLf & Err.Description & vbCrLf & Err.LastDllError
 End Sub
 
 Private Function Num_Parse(s As String) As Long

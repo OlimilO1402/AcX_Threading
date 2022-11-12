@@ -11,21 +11,22 @@ Public Function CheckAndRegister(ByVal libID As String, ByVal clsID As String, B
     Dim mess As String: mess = "Could not create instance of class: " & clsID & "." & vbCrLf & "Maybe class not registered from library: " & libID
     Dim btn As VbMsgBoxStyle: btn = vbOKOnly
     
-    If IsAdmin Then
-        mess = mess & vbCrLf & "Register now?"
-        btn = vbYesNo
+    If FileExists(pfn) Then
+        
+        If IsAdmin Then
+            mess = mess & vbCrLf & "Register now?"
+            btn = vbYesNo
+        Else
+            mess = mess & vbCrLf & "Restart app and run as admin to register here!"
+        End If
+        
     Else
-        mess = mess & vbCrLf & "Restart app and run as admin to register here!"
+        mess = mess & vbCrLf & "File not found, unable to register: " & vbCrLf & pfn
     End If
     
     If MsgBox(mess, btn) = vbYes Then
         
-        If Not FileExists(pfn) Then
-            MsgBox "File not found: " & vbCrLf & pfn
-            Exit Function
-        End If
-        
-        'OK now we try to register it
+        'OK everything looks good, now we try to register it
         Dim rv As Double
         rv = Shell(pfn & " /RegServer", vbNormalFocus)
         
@@ -40,14 +41,17 @@ Public Function CheckAndRegister(ByVal libID As String, ByVal clsID As String, B
 End Function
 
 Public Function FileExists(ByVal pfn As String) As Boolean
+Try: On Error GoTo Catch
     FileExists = Not CBool(GetAttr(pfn) And (vbDirectory Or vbVolume))
+Catch: On Error GoTo 0
 End Function
 
 Public Function IsAcXRegistered(ByVal ClassID As String) As Boolean
 Try: On Error GoTo Catch
     Dim obj As Object: Set obj = CreateObject(ClassID)
     IsAcXRegistered = Not (obj Is Nothing)
-Catch:
+    Exit Function
+Catch: On Error GoTo 0
 End Function
 
 Public Sub Unregister(ByVal libID As String, ByVal clsID As String, pfn As String)
