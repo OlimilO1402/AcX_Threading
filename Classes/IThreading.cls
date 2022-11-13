@@ -13,6 +13,6 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-Public Sub ActionStarted(ByVal Index As Long):   End Sub
-Public Sub ActionCompleted(ByVal Index As Long): End Sub
+Public Sub ActionStarted(IndexKey):   End Sub
+Public Sub ActionCompleted(IndexKey): End Sub
 

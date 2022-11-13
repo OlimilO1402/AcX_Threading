@@ -15,10 +15,11 @@ Option Explicit
 'Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliSeconds As Long)
 Private mIThreading As IThreading
 Private mFrmHelp    As frmHelp
-Private mIndex      As Long
+'Private mIndex      As Long
 Private mStartDate  As Date
 Private mStartTime  As Single
 Private mEndTime    As Single
+
 Private mIP         As String
 Private mName       As String
 Private mErr        As String
@@ -27,20 +28,20 @@ Private Const WSADescription_Len As Long = 256
 Private Const WSASYS_Status_Len  As Long = 128
 
 Private Type WSADATA
-   nVersion         As Integer
-   nHighVersion     As Integer
-   yDescription(0 To WSADescription_Len)   As Byte
-   ySystemStatus(0 To WSASYS_Status_Len)   As Byte
-   nMaxSockets      As Integer
-   nMaxUdp          As Integer
-   lVvenderInfo   As Long
+   nVersion             As Integer
+   nHighVersion         As Integer
+   yDescript(0 To 256)  As Byte
+   ySysStatus(0 To 128) As Byte
+   nMaxSockets          As Integer
+   nMaxUdp              As Integer
+   lVvenderInfo         As Long
 End Type
 
 Private Type sockaddr_in
-    sin_family  As Integer
-    sin_port    As Integer
-    sin_addr    As Long
-    sin_zero(0 To 8)    As Byte
+    sin_family       As Integer
+    sin_port         As Integer
+    sin_addr         As Long
+    sin_zero(0 To 8) As Byte
 End Type
 
 Private Declare Function WSAGetLastError Lib "Ws2_32" () As Long
@@ -60,8 +61,8 @@ Private Sub Class_Terminate()
     Unload mFrmHelp
 End Sub
 
-Public Sub New_(ith As IThreading, ByVal aIndex As Long, ByVal sIP As String)
-    Set mIThreading = ith: mIndex = aIndex: mIP = sIP
+Public Sub New_(ith As IThreading, ByVal sIP As String)
+    Set mIThreading = ith: mIP = sIP ': mIndex = aIndex
 End Sub
 
 Public Sub Terminate()
@@ -92,6 +93,9 @@ Public Property Get Name() As String
     Name = mName
 End Property
 
+Public Function IsValid() As Boolean
+    IsValid = Not (mIP = mName)
+End Function
 Public Property Get DurationMs() As Single
     DurationMs = (mEndTime - mStartTime) * 1000
 End Property
@@ -100,7 +104,7 @@ Friend Sub DoAction()
 Try: On Error GoTo Catch
     mStartDate = Now
     mStartTime = Timer
-    mIThreading.ActionStarted mIndex
+    mIThreading.ActionStarted mIP ' mIndex
     
     'Dim z As Long, v As Double
     'For z = 1 To 10 ^ 7
@@ -110,21 +114,20 @@ Try: On Error GoTo Catch
     mName = GetNameFromIP(mIP)
     
     mEndTime = Timer
-    mIThreading.ActionCompleted mIndex
+    mIThreading.ActionCompleted mIP 'mIndex
     Exit Sub
 Catch:
-    MsgBox TypeName(Me) & "::DoAction" & mErr & " " & Err.Number & " " & Err.Description & vbCrLf & WSAGetLastError
+    MsgBox "Error in " & TypeName(Me) & "::DoAction" & mErr & " " & Err.Number & " " & Err.Description & vbCrLf & WSAGetLastError
 End Sub
-
  
 Private Function GetNameFromIP(ByVal strIP As String) As String
 Try: On Error GoTo Catch
-    Const WS_VERSION_REQD2          As Long = &H202
-    Const SOCKET_ERROR              As Long = -1
-    Const IP_SUCCESS                As Long = 0&
-    Const WSADescription_Len        As Long = 255
-    Const WSASYS_Status_Len         As Long = 127
-    Const AF_INET                   As Integer = 2
+    Const WS_VERSION_REQD2   As Long = &H202
+    Const SOCKET_ERROR       As Long = -1
+    Const IP_SUCCESS         As Long = 0&
+    Const WSADescription_Len As Long = 255
+    Const WSASYS_Status_Len  As Long = 127
+    Const AF_INET            As Integer = 2
 
     Dim llIP            As Long
     Dim ltWSAD          As WSADATA
@@ -147,7 +150,7 @@ Try: On Error GoTo Catch
             llReturnCode = getnameinfo(ltSockAddr_in, Len(ltSockAddr_in), lsHostname, Len(lsHostname), 0, 0, 0)
             'Debug.Print "end: " & Timer
             
-            GetNameFromIP = lsHostname
+            GetNameFromIP = RemoveNullChars(lsHostname)
             Exit Function
         Else
             mErr = "Invalid IP"
@@ -158,6 +161,11 @@ Try: On Error GoTo Catch
     End If
     Exit Function
 Catch:
-    MsgBox TypeName(Me) & "::GetNameFromIP " & mErr & " " & Err.Number & " " & Err.Description & vbCrLf & WSAGetLastError
+    MsgBox "Error in " & TypeName(Me) & "::GetNameFromIP " & mErr & " " & Err.Number & " " & Err.Description & vbCrLf & WSAGetLastError
+End Function
+
+Function RemoveNullChars(ByVal s As String) As String
+    Dim slen As Long: slen = InStr(1, s, vbNullChar) - 1
+    If slen > 0 Then RemoveNullChars = Left(s, slen) Else RemoveNullChars = s
 End Function
 

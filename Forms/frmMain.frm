@@ -60,11 +60,11 @@ Begin VB.Form frmMain
       Width           =   1575
    End
    Begin VB.TextBox Text1 
-      Alignment       =   1  'Rechts
+      Alignment       =   2  'Zentriert
       Height          =   345
       Left            =   135
       TabIndex        =   1
-      Text            =   "100"
+      Text            =   "192.168.178"
       Top             =   135
       Width           =   1545
    End
@@ -127,12 +127,18 @@ Try: On Error GoTo Catch
     Dim mp As MousePointerConstants: mp = Me.MousePointer
     Me.MousePointer = MousePointerConstants.vbArrowHourglass
     
-    Dim i As Long, c As Long, n As Long: n = Num_Parse(Text1.Text)
-    If n <= 0 Then Exit Sub
+    'Dim i As Long, n As Long: n = Num_Parse(Text1.Text)
+    'If n <= 0 Then Exit Sub
+    Dim tcp As String:  tcp = Text1.Text
+    If Not IPBase_TryParse(tcp) Then
+        MsgBox tcp & ": please give a valid tcp-address in the form: [0-255].[0-255].[0-255]"
+        Exit Sub
+    End If
     
-    For i = 0 To n - 1
-        c = m_Threads.Count
-        m_Threads.Add MNew.MyThread(Me, c, "192.168.178." & c)
+    Dim i As Long, ip As String
+    For i = 0 To 255 'n - 1
+        ip = tcp & CStr(i)
+        ThreadsAdd(MNew.MyThread(Me, ip)).Action
     Next
     
     Me.MousePointer = mp
@@ -141,10 +147,31 @@ Catch:
     MsgBox "Error : " & Err.Number & " in " & TypeName(Me) & "::" & "BtnCreateThreads_Click" & vbCrLf & Err.Description & vbCrLf & Err.LastDllError
 End Sub
 
-Private Function Num_Parse(s As String) As Long
-    
-    If IsNumeric(s) Then Num_Parse = CLng(s)
-    
+Function ThreadsAdd(mt As MyThread) As MyThread
+    m_Threads.Add mt, mt.ip
+    Set ThreadsAdd = mt
+End Function
+
+'Private Function Num_Parse(s As String) As Long
+'
+'    If IsNumeric(s) Then Num_Parse = CLng(s)
+'
+'End Function
+
+Private Function IPBase_TryParse(s_inout As String) As Boolean
+Try: On Error GoTo Catch
+    Dim sa() As String: sa = Split(s_inout, ".")
+    Dim i As Long, b(0 To 2) As String
+    For i = 0 To Min(UBound(sa), 2)
+        b(i) = CStr(CByte(sa(i)))
+    Next
+    s_inout = Join(b, ".") & "."
+    IPBase_TryParse = True
+Catch:
+End Function
+
+Function Min(V1, V2)
+    If V1 < V2 Then Min = V1 Else Min = V2
 End Function
 
 Private Sub BtnStartThreads_Click()
@@ -162,7 +189,7 @@ Private Sub BtnSetNewIPAddresses_Click()
     Dim mt As MyThread, c As Long, v
     For Each v In m_Threads
         Set mt = v
-        mt.IP = "192.168.2." & c
+        mt.ip = "192.168.2." & c
         c = c + 1
     Next
     
@@ -179,15 +206,17 @@ End Sub
 
 ' v ############################## v '    Implements IThreading    ' v ############################## v '
 
-Private Sub IThreading_ActionStarted(ByVal Index As Long)
-    Dim mt As MyThread: Set mt = m_Threads.Item(Index + 1)
+Private Sub IThreading_ActionStarted(IndexKey)
+    Dim key As String: key = CStr(IndexKey)
+    Dim mt As MyThread: Set mt = m_Threads.Item(key)
     Dim std As Date: std = mt.StartDate
-    List1.AddItem "Started " & std & " " & Index
+    List1.AddItem "Started " & std & " IP: " & mt.ip
 End Sub
 
-Private Sub IThreading_ActionCompleted(ByVal Index As Long)
-    Dim mt As MyThread: Set mt = m_Threads.Item(Index + 1)
+Private Sub IThreading_ActionCompleted(IndexKey)
+    Dim key As String: key = CStr(IndexKey)
+    Dim mt As MyThread: Set mt = m_Threads.Item(key)
     Dim dur As String: dur = mt.DurationMs & " ms"
-    List1.AddItem "Completed in " & dur & "; Index: " & Index & "; IP: " & mt.IP & "; Name: " & mt.Name
+    List1.AddItem "Completed in " & dur & "; IP: " & mt.ip & "; Name: " & mt.Name
 End Sub
 
