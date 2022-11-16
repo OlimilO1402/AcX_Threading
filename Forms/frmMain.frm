@@ -23,41 +23,33 @@ Begin VB.Form frmMain
       Caption         =   "UnregServer"
       Height          =   375
       Left            =   8040
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   120
       Width           =   1575
    End
    Begin VB.CommandButton BtnClearList 
       Caption         =   "Clear List"
       Height          =   375
-      Left            =   6480
-      TabIndex        =   4
-      Top             =   120
-      Width           =   1575
-   End
-   Begin VB.CommandButton BtnSetNewIPAddresses 
-      Caption         =   "New IP-address"
-      Height          =   375
-      Left            =   4920
-      TabIndex        =   6
-      Top             =   120
-      Width           =   1575
-   End
-   Begin VB.CommandButton BtnStartThreads 
-      Caption         =   "Start Threads"
-      Height          =   375
-      Left            =   3360
+      Left            =   6600
       TabIndex        =   3
       Top             =   120
-      Width           =   1575
+      Width           =   1455
+   End
+   Begin VB.CommandButton BtnSetNewIPAddresses 
+      Caption         =   "Set New IP-Address"
+      Height          =   375
+      Left            =   4200
+      TabIndex        =   5
+      Top             =   120
+      Width           =   2415
    End
    Begin VB.CommandButton BtnCreateThreads 
-      Caption         =   "Create Threads"
+      Caption         =   "Create && Start Threads"
       Height          =   375
       Left            =   1800
       TabIndex        =   2
       Top             =   120
-      Width           =   1575
+      Width           =   2415
    End
    Begin VB.TextBox Text1 
       Alignment       =   2  'Zentriert
@@ -184,12 +176,21 @@ Private Sub BtnStartThreads_Click()
     
 End Sub
 
+'Hja so ist das Mist!
+'die ganze IP-Adresse als key in der Collection zu haben ist doof, weil jede IP im Idealfalls nur einmal abgefragt werden muss.
+'Wenn man nur den Index als Key in der Collection hat, dann kann man das MyThread-Object für die nächste IPadresse wiederverwenden.
 Private Sub BtnSetNewIPAddresses_Click()
+    
+    Dim tcp As String:  tcp = Text1.Text
+    If Not IPBase_TryParse(tcp) Then
+        MsgBox tcp & ": please give a valid tcp-address in the form: [0-255].[0-255].[0-255]"
+        Exit Sub
+    End If
     
     Dim mt As MyThread, c As Long, v
     For Each v In m_Threads
         Set mt = v
-        mt.ip = "192.168.2." & c
+        mt.ip = tcp & c
         c = c + 1
     Next
     
